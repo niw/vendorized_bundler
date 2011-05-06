@@ -6,7 +6,7 @@ module Bundler
 
     def boot!
       unless bundler_exists?
-        puts "bundler-#{VERSION} is not found, install it under #{vendor_path} directory."
+        puts "#{bundler_gem_name} is not found, install it under #{vendor_path} directory."
         create_vendor_path
         install_bundler
       end
@@ -49,11 +49,15 @@ module Bundler
     end
 
     def bundler_path
-      @bundler_path ||= File.join(vendor_path, "bundler-#{VERSION}")
+      @bundler_path ||= File.join(vendor_path, bundler_gem_name)
     end
 
     def bundle_path
       @bundle_path ||= File.join(vendor_path, "bundle")
+    end
+
+    def bundler_gem_name
+      @bundler_gem_name ||= "bundler-#{VERSION}"
     end
   end
 end
