@@ -38,10 +38,20 @@ module Bundler
     end
 
     def install_bundler
+      invoke_gem_command("fetch", "bundler", "-v", VERSION)
+      invoke_gem_command("unpack", "--target", vendor_path, "#{bundler_gem_name}.gem")
+    end
+
+    def invoke_gem_command(command, *options)
       require "rubygems"
-      require "rubygems/commands/unpack_command"
-      unpack_command = Gem::Commands::UnpackCommand.new
-      unpack_command.invoke("--target", vendor_path, "bundler", "-v", VERSION)
+      require "rubygems/commands/#{command}_command"
+      command = Gem::Commands.const_get("#{classify(command)}Command").new
+      command.invoke(*options)
+    end
+
+    def classify(name)
+      # Based on ActiveSupport::Inflector.camelize
+      name.to_s.gsub(/\/(.?)/){"::#{$1.upcase}"}.gsub(/(?:^|_)(.)/){$1.upcase}
     end
 
     def vendor_path
