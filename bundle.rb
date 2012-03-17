@@ -2,7 +2,7 @@
 
 module Bundler
   class Vendorized
-    VERSION = "1.0.3"
+    VERSION = "1.1.1"
 
     def boot!
       unless bundler_exists?
