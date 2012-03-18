@@ -5,6 +5,10 @@ module Bundler
     VERSION = "1.1.1"
 
     def boot!
+      # Remember bundle path exists or not.
+      # install_bundler may create this path.
+      bundle_path_exists = File.exists?(bundle_path)
+      
       unless bundler_exists?
         puts "#{bundler_gem_name} is not found, install it under #{vendor_path} directory."
         create_vendor_path
@@ -13,7 +17,7 @@ module Bundler
       $LOAD_PATH << "#{bundler_path}/lib"
 
       if $0 == __FILE__
-        if ARGV.empty? && !File.exists?(bundle_path)
+        if ARGV.empty? && !bundle_path_exists
           ARGV.unshift("install", "--path", bundle_path)
         end
         load "#{bundler_path}/bin/bundle"
@@ -52,6 +56,8 @@ module Bundler
 
       command = Gem::Commands.const_get("#{classify(command)}Command").new
       command.invoke(*options)
+
+      Gem.clear_paths
     end
 
     def classify(name)
