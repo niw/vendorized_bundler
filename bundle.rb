@@ -45,6 +45,11 @@ module Bundler
     def invoke_gem_command(command, *options)
       require "rubygems"
       require "rubygems/commands/#{command}_command"
+
+      # To avoid Gem::Installer claims, which is trying to create Gem.dir first.
+      # Use same dir which bundler is going to use.
+      Gem.use_paths gem_home_path
+
       command = Gem::Commands.const_get("#{classify(command)}Command").new
       command.invoke(*options)
     end
@@ -64,6 +69,10 @@ module Bundler
 
     def bundle_path
       @bundle_path ||= File.join(vendor_path, "bundle")
+    end
+
+    def gem_home_path
+      @gem_home_path ||= File.join(bundle_path, Gem.ruby_engine, Gem::ConfigMap[:ruby_version])
     end
 
     def bundler_gem_name
